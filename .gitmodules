@@ -1,0 +1,3 @@
+[submodule "module_1"]
+	path = module_1
+	url = https://github.com/Alexius-rts/skillfactory_rds.git
