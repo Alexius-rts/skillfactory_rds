@@ -77,7 +77,7 @@
 # 
 # 29 score — баллы по госэкзамену по математике
 
-# In[1]:
+# In[122]:
 
 
 import pandas as pd
@@ -95,7 +95,7 @@ pd.set_option('display.max_columns', 30)  # показывать больше к
 df = pd.read_csv('stud_math.csv')
 
 
-# In[2]:
+# In[123]:
 
 
 # Предобработка.
@@ -150,13 +150,13 @@ def hist_source_data(column):
     return
 
 
-# In[3]:
+# In[124]:
 
 
 len(df.columns)
 
 
-# In[4]:
+# In[125]:
 
 
 df.head(20)
@@ -164,13 +164,13 @@ df.head(20)
 
 # ### Первичный отсмотр данных
 
-# In[5]:
+# In[126]:
 
 
 df.info()
 
 
-# In[6]:
+# In[127]:
 
 
 df.columns = map(str.lower, df.columns)
@@ -178,7 +178,7 @@ df.columns = map(str.lower, df.columns)
 
 # ###  Первичный анализ данных в столбцах.
 
-# In[7]:
+# In[128]:
 
 
 # В виду того, что значения столбца "studytime,granular" равны значениям столбца "study",
@@ -186,20 +186,10 @@ df.columns = map(str.lower, df.columns)
 df = df.drop(['studytime, granular'], axis=1)
 
 
-# In[8]:
+# In[129]:
 
-
-list_num = []  # создаем список столбцов с числовыми значениями
-list_obj = []  # создаем список столбцов со категориальными значениями
-
-for col in df.columns:
-    if (is_numeric_dtype(df[col])):
-        list_num.append(col)
-    else:
-        list_obj.append(col)
 
 # описываем функцию, заменяющую в строковых столбцах  пробел на None
-
 
 def clear_column(column):
     return df[column].astype(str).apply(lambda x: None if x.strip() == '' else x)
@@ -211,7 +201,7 @@ for col in list_obj:
 
 # ## 1. School
 
-# In[9]:
+# In[130]:
 
 
 column = 'school'
@@ -219,7 +209,7 @@ info_column(column)
 # School имеет всего 2 значения: GP и MS. GP в 7.5 раз  больше, чем MS. Пустых значений нет
 
 
-# In[10]:
+# In[131]:
 
 
 # Задаем границы графика распределения
@@ -230,7 +220,7 @@ hist_source_data(column)
 
 # ## 2. Sex
 
-# In[11]:
+# In[132]:
 
 
 column = 'sex'
@@ -238,7 +228,7 @@ info_column(column)
 # Пустых значений нет. Девочек чуть больше, чем мальчиков
 
 
-# In[12]:
+# In[133]:
 
 
 hist_source_data(column)
@@ -246,7 +236,7 @@ hist_source_data(column)
 
 # ## 3. Age
 
-# In[13]:
+# In[134]:
 
 
 column = 'age'
@@ -254,7 +244,7 @@ info_column(column)
 # Возраст от 16 до 22.Пустых значений нет
 
 
-# In[14]:
+# In[135]:
 
 
 # Задаем границы графика распределения
@@ -271,20 +261,20 @@ hist_source_data(column)
 
 # ## 4. Address
 
-# In[15]:
+# In[136]:
 
 
 column = 'address'
 info_column(column)
 
 
-# In[16]:
+# In[137]:
 
 
 df[df.address.isnull()]
 
 
-# In[17]:
+# In[138]:
 
 
 # Находим среднее  timetravel для каждого типа адреса
@@ -292,7 +282,7 @@ mean_time_r = df.groupby('address')['traveltime'].mean().loc['R']
 mean_time_u = df.groupby('address')['traveltime'].mean().loc['U']
 
 
-# In[18]:
+# In[139]:
 
 
 # Заполняем address следующим образом: сравниваем абсолютные значения разностей timetravel
@@ -305,14 +295,14 @@ for i in df[df.address.isnull()].index:
             df.address.loc[i] = 'U'
 
 
-# In[19]:
+# In[140]:
 
 
 # Удаляем оставшиеся 3 строки с пустым address и traveltime - данные столбцы напрямую взаимосвязаны, и мы не сможем определить какие значения присвоить пропущенным значениям
 df.dropna(subset=['address'], inplace=True)
 
 
-# In[20]:
+# In[141]:
 
 
 # Задаем границы графика распределения
@@ -323,14 +313,14 @@ hist_source_data(column)
 
 # ## 5. Famsize
 
-# In[21]:
+# In[142]:
 
 
 column = 'famsize'
 info_column(column)
 
 
-# In[22]:
+# In[143]:
 
 
 # присвоим пропущеным значениям наиболее часто встречающееся значение
@@ -340,14 +330,14 @@ hist_source_data(column)
 
 # ## 6.  Pstatus
 
-# In[23]:
+# In[144]:
 
 
 column = 'pstatus'
 info_column(column)
 
 
-# In[24]:
+# In[145]:
 
 
 # присвоим пропущеным значениям наиболее часто встречающееся значение
@@ -357,14 +347,14 @@ hist_source_data(column)
 
 # ## 7. Medu
 
-# In[25]:
+# In[146]:
 
 
 column = 'medu'
 info_column(column)
 
 
-# In[26]:
+# In[147]:
 
 
 # присвоим пропускам округленное среднее значение (зачастую оно же mode) medu
@@ -381,14 +371,21 @@ hist_source_data(column)
 
 # ## 8. Fedu
 
-# In[27]:
+# In[148]:
 
 
 column = 'fedu'
 info_column(column)
 
 
-# In[28]:
+# In[149]:
+
+
+# Удалим строку с явно неправильным значением
+df = df.drop(np.where(df.fedu == 40.0)[0])
+
+
+# In[150]:
 
 
 insert_mean(column)
@@ -404,14 +401,14 @@ hist_source_data(column)
 
 # ## 9. Mjob
 
-# In[31]:
+# In[151]:
 
 
 column = 'mjob'
 info_column(column)
 
 
-# In[29]:
+# In[152]:
 
 
 # присвоим пропущеным значениям работы отцов наиболее часто встречающееся значение - other
@@ -421,14 +418,14 @@ hist_source_data(column)
 
 # ## 10. Fjob
 
-# In[30]:
+# In[153]:
 
 
 column = 'fjob'
 info_column(column)
 
 
-# In[31]:
+# In[154]:
 
 
 # присвоим пропущеным значениям работы матерей наиболее часто встречающееся значение - other
@@ -438,14 +435,14 @@ hist_source_data(column)
 
 # ## 11. Reason
 
-# In[32]:
+# In[155]:
 
 
 column = 'reason'
 info_column(column)
 
 
-# In[33]:
+# In[156]:
 
 
 # присвоим пропущенным значениям причины выбора школы наиболее часто встречающееся значение - course
@@ -455,14 +452,14 @@ hist_source_data(column)
 
 # ## 12. Guardian
 
-# In[34]:
+# In[157]:
 
 
 column = 'guardian'
 info_column(column)
 
 
-# In[35]:
+# In[158]:
 
 
 # присвоим пропущенным значениям наиболее часто встречающееся значение - mother
@@ -472,14 +469,14 @@ hist_source_data(column)
 
 # ## 13. traveltime
 
-# In[36]:
+# In[159]:
 
 
 column = 'traveltime'
 info_column(column)
 
 
-# In[37]:
+# In[160]:
 
 
 # присвоим пропущенным значениям округленное среднее значение
@@ -492,14 +489,14 @@ hist_source_data(column)
 
 # ## 14. Studytime
 
-# In[38]:
+# In[161]:
 
 
 column = 'studytime'
 info_column(column)
 
 
-# In[39]:
+# In[162]:
 
 
 # присвоим пропущенным значениям округленное среднее значение
@@ -512,14 +509,14 @@ hist_source_data(column)
 
 # ## 15. Failures
 
-# In[40]:
+# In[163]:
 
 
 column = 'failures'
 info_column(column)
 
 
-# In[41]:
+# In[164]:
 
 
 # присвоим пропущенным значениям округленное среднее значение
@@ -532,14 +529,14 @@ hist_source_data(column)
 
 # ## 16. schoolsup
 
-# In[42]:
+# In[165]:
 
 
 column = 'schoolsup'
 info_column(column)
 
 
-# In[43]:
+# In[166]:
 
 
 insert_mode(column)
@@ -548,14 +545,14 @@ hist_source_data(column)
 
 # ## 17. Famsup
 
-# In[44]:
+# In[167]:
 
 
 column = 'famsup'
 info_column(column)
 
 
-# In[45]:
+# In[168]:
 
 
 insert_mode(column)
@@ -564,14 +561,14 @@ hist_source_data(column)
 
 # ## 18. Paid
 
-# In[46]:
+# In[169]:
 
 
 column = 'paid'
 info_column(column)
 
 
-# In[47]:
+# In[170]:
 
 
 insert_mode(column)
@@ -580,14 +577,14 @@ hist_source_data(column)
 
 # ## 19. Activities
 
-# In[48]:
+# In[171]:
 
 
 column = 'activities'
 info_column(column)
 
 
-# In[49]:
+# In[172]:
 
 
 insert_mode(column)
@@ -596,14 +593,14 @@ hist_source_data(column)
 
 # ## 20. Nursery
 
-# In[50]:
+# In[173]:
 
 
 column = 'nursery'
 info_column(column)
 
 
-# In[51]:
+# In[174]:
 
 
 insert_mode(column)
@@ -612,14 +609,14 @@ hist_source_data(column)
 
 # ## 21. Higher
 
-# In[52]:
+# In[175]:
 
 
 column = 'higher'
 info_column(column)
 
 
-# In[53]:
+# In[176]:
 
 
 insert_mode(column)
@@ -628,14 +625,14 @@ hist_source_data(column)
 
 # ## 22. Internet
 
-# In[54]:
+# In[177]:
 
 
 column = 'internet'
 info_column(column)
 
 
-# In[55]:
+# In[178]:
 
 
 insert_mode(column)
@@ -644,14 +641,14 @@ hist_source_data(column)
 
 # ## 23. Romantic
 
-# In[56]:
+# In[179]:
 
 
 column = 'romantic'
 info_column(column)
 
 
-# In[57]:
+# In[180]:
 
 
 insert_mode(column)
@@ -660,21 +657,21 @@ hist_source_data(column)
 
 # ## 24. Famrel
 
-# In[58]:
+# In[181]:
 
 
 column = 'famrel'
 info_column(column)
 
 
-# In[59]:
+# In[182]:
 
 
 # удаляем строку с неправильным значением -1
 df = df.drop(np.where(df.famrel == -1.0)[0])
 
 
-# In[60]:
+# In[183]:
 
 
 insert_mean(column)
@@ -685,14 +682,14 @@ hist_source_data(column)
 
 # ## 25. Freetime
 
-# In[61]:
+# In[184]:
 
 
 column = 'freetime'
 info_column(column)
 
 
-# In[62]:
+# In[185]:
 
 
 insert_mean(column)
@@ -703,14 +700,14 @@ hist_source_data(column)
 
 # ## 26. Goout
 
-# In[63]:
+# In[186]:
 
 
 column = 'goout'
 info_column(column)
 
 
-# In[64]:
+# In[187]:
 
 
 insert_mean(column)
@@ -720,14 +717,14 @@ hist_source_data(column)
 
 # ## 27. Health
 
-# In[65]:
+# In[188]:
 
 
 column = 'health'
 info_column(column)
 
 
-# In[66]:
+# In[189]:
 
 
 insert_mean(column)
@@ -737,14 +734,14 @@ hist_source_data(column)
 
 # ## 28. Absences
 
-# In[67]:
+# In[190]:
 
 
 column = 'absences'
 info_column(column)
 
 
-# In[68]:
+# In[191]:
 
 
 # зададим пределы графика гистограммы до явного выброса: 40
@@ -756,7 +753,7 @@ IQR_perc(column)
 hist_source_data(column)
 
 
-# In[69]:
+# In[192]:
 
 
 # Т.к. за пределами стандартных границ выбросов имеется достаточно данных, вручную увеличим размах усов выбросов:
@@ -772,14 +769,14 @@ print('Количество значений за пределами удлин�
       len(df.loc[df['absences'] >= 28]))
 
 
-# In[70]:
+# In[193]:
 
 
 # Удалим данные выбросы
 df = df.drop(df[df['absences'] >= 28].index)
 
 
-# In[71]:
+# In[194]:
 
 
 IQR_perc(column)
@@ -788,44 +785,65 @@ hist_source_data(column)
 
 # ## 29. Score
 
-# In[72]:
+# In[195]:
 
 
 column = 'score'
 info_column(column)
 
 
-# In[73]:
+# In[196]:
 
 
 insert_mode(column)
 
 
-# In[74]:
+# In[197]:
 
 
 IQR_perc(column)
 hist_source_data(column)
-# 0 не удаляем, т.к. это видимо те кто не явился, или не сдавал работу на проверку.
-# Разделение на 2 столбца: явка на экзамен (yes, no) и оценку в случае явки - непроизводим
+
+
+# In[198]:
+
+
+# 0 удаляем, т.к. это видимо те кто не явился, или не сдавал работу на проверку.
+
+df = df.drop(df[df['score'] == 0].index)
+
+
+# In[199]:
+
+
+df
 
 
 # ## Корреляционный анализ
 
-# In[76]:
+# In[201]:
+
+
+# создаем список столбцов с числовыми значениями
+list_num = ['age', 'absences','score']
+# создаем список столбцов со категориальными значениями
+list_obj = list(set(df.columns).difference(list_num))
+
+
+# In[202]:
 
 
 # датафейм из  столбцов с числовыми значениями
 df_num = df.loc[:, df.columns.isin(list_num)]
 
 
-# In[77]:
+# In[203]:
 
 
 sns.pairplot(df_num, kind='reg')
 
 
-# In[78]:
+# In[204]:
 
 
 correlation = df_num.corr()
@@ -836,7 +854,7 @@ sns.heatmap(correlation, annot=True, cmap='coolwarm')
 
 # ## Анализ номинативных переменных
 
-# In[79]:
+# In[205]:
 
 
 def get_boxplot(column):
@@ -850,24 +868,21 @@ def get_boxplot(column):
     plt.show()
 
 
-# In[80]:
+# In[206]:
 
 
 for col in list_obj:
     get_boxplot(col)
 
 
-# In[81]:
+# In[207]:
 
 
-# По графикам похоже, что параметры reason и school, не влияют на результаты экзамена по математике
+# По графикам похоже, что параметры reason, school, paid,guardian не влияют на результаты экзамена по математике
 
 
-# In[82]:
+# In[212]:
 
-
-# Т.к. у нас датафрейм имеет менее 400 строк, а значит длина выборок различных значений не превышает нескольких сотен,
-# то тогда alpha есть смысл задавать равным 0.1
 
 
 def get_stat_dif(column):
@@ -876,31 +891,31 @@ def get_stat_dif(column):
     for comb in combinations_all:
         if ttest_ind(df.loc[df.loc[:, column] == comb[0], 'score'],
                      df.loc[df.loc[:, column] == comb[1], 'score']).pvalue \
-                <= 0.1/len(combinations_all):  # Учли поправку Бонферони
+                <= 0.05/len(combinations_all):  # Учли поправку Бонферони
             print('Найдены статистически значимые различия для колонки', column)
             break
 
 
-# In[83]:
+# In[213]:
 
 
 for col in list_obj:
     get_stat_dif(col)
 
 
-# Как мы видим, в категориальных данных серьёзно отличаются 7 параметров: 'sex', 'address', 'mjob', 'schoolsup', 'paid', 'higher', 'romantic'
+# Как мы видим, в категориальных данных серьёзно отличаются 8 параметров: 'sex', 'address', 'medu', 'fedu',  'schoolsup',  'failures', 'studytime', 'goout'
 # 
 # Оставим эти переменные в датасете для дальнейшего построения модели. 
 # 
 # Итак, в нашем случае важные переменные, которые, возможно, оказывают влияние на оценку экзамена по математике, это: 
-# 'age', 'address', 'sex', 'medu', 'fedu', 'mjob', 'traveltime', 'studytime', 'failures', 'schoolsup', 'paid', 'higher', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences'.
+# 'age', 'absences', 'sex', 'failures', 'address', 'medu', 'fedu',  'schoolsup', 'studytime', 'goout'.
 # И столбец целевой переменной - 'score'
 # 
 
-# In[91]:
+# In[214]:
 
 
-column_for_model = df.loc[:, ['age', 'address', 'sex', 'medu', 'fedu', 'mjob', 'traveltime', 'studytime', 'failures', 'schoolsup', 'paid', 'higher', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences', 'score']]
+column_for_model = df.loc[:, ['age', 'absences', 'sex', 'failures', 'address', 'medu', 'fedu',  'schoolsup', 'studytime', 'goout', 'score']]
 column_for_model.head()
 
 
@@ -908,4 +923,10 @@ column_for_model.head()
 
 # - В данных мало пустых значений: максимальные пропуски были в столбцах:  pstatus - 12%, famsup - 10% и paid -11%
 # - выброcы вне пределов нормальных данных были только в одной строке в famrel (-1.0), что говорит о том, что данные достаточно чистые 
-# - Самые важные параметры, которые предлагается использовать в дальнейшем для построения модели, это age', 'address', 'sex', 'medu', 'fedu', 'mjob', 'traveltime', 'studytime', 'failures', 'schoolsup', 'paid', 'higher', 'romantic', 'famrel', 'freetime', 'goout', 'health', 'absences' и 'score'
+# - Самые важные параметры, которые предлагается использовать в дальнейшем для построения модели, это 'age', 'absences', 'sex', 'failures', 'address', 'medu', 'fedu',  'schoolsup', 'studytime', 'goout', 'score'
+
+# In[ ]:
+
+
+
+
