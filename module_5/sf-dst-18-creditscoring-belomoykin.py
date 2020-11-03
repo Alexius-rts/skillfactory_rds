@@ -27,7 +27,7 @@
 # - app_date - дата подачи заявки
 # - default - флаг дефолта по кредиту
 
-# In[310]:
+# In[1]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -50,14 +50,14 @@ for dirname, _, filenames in os.walk('/kaggle/input'):
 PATH_to_file = '/kaggle/input/sf-dst-scoring/'
 
 
-# In[311]:
+# In[2]:
 
 
 # всегда фиксируйте RANDOM_SEED, чтобы ваши эксперименты были воспроизводимы!
 RANDOM_SEED = 42
 
 
-# In[312]:
+# In[3]:
 
 
 # зафиксируем версию пакетов, чтобы эксперименты были воспроизводимы:
@@ -66,7 +66,7 @@ get_ipython().system('pip freeze > requirements.txt')
 
 # ### Импорт библиотек
 
-# In[313]:
+# In[4]:
 
 
 import numpy as np # linear algebra
@@ -93,7 +93,7 @@ import datetime as DT
 
 # ### Определение базовых функций
 
-# In[314]:
+# In[5]:
 
 
 # Функция по сбору информации по каждому столбцу
@@ -115,34 +115,30 @@ def my_describe(df):
     display(temp.T)
     return
 
-# прорисовка гистограммы исходных данных
-def graph_source_data(df,column):
-    start_point = df[column].min()
-    end_point = df[column].max()
-    fig, ax = plt.subplots(1,2)
-    ax[0].hist(df[column], alpha=0.4, bins=40, range=(
-        start_point, end_point), label='Исходные данные {}'. format(column))
-    ax[0].set_title(column)
-    ax[1].boxplot(df[column])
-    plt.legend()
+
+def show_plot_boxplot(df, column, bins=80):
+    """Построение гистограммы по столбцу и boxplot-а"""
+    color_text = plt.get_cmap('PuBuGn')(0.9)
+    plt.style.use('seaborn')
+    plt.rcParams['figure.figsize'] = (10, 4)
+    _, axes = plt.subplots(2, 1)
+    axes[0].hist(df[column], bins=bins)
+    axes[0].set_title("Гистограмма и boxplot для признака "+column)
+    axes[1].boxplot(df[column], vert=False, showmeans = True)
+    axes[1].set_title('')
     return
 
 
 # Пропишем функцию расчета IQR и квартилей. И прорисовку  их графика
 
-def IQR_perc(df):
+def IQR_perc(df,list_cols):
     temp = {}
-    temp['Имя признака'] = num_cols
-    start_point = df[num_cols].min()
-    end_point = df[num_cols].max()
-    #IQR = df[num_cols].quantile(0.75) - df[num_cols].quantile(0.25)
-    #perc25 = df[num_cols].quantile(0.25)
-    #perc75 = df[num_cols].quantile(0.75)
-    temp['IQR'] = df[num_cols].quantile(0.75) - df[num_cols].quantile(0.25)
-    temp['perc25'] = df[num_cols].quantile(0.25)
-    temp['perc75'] = df[num_cols].quantile(0.75)
-    temp['Л. граница выбросов'] = df[num_cols].quantile(0.25) - 1.5*(df[num_cols].quantile(0.75) - df[num_cols].quantile(0.25))
-    temp['П. граница выбросов'] =df[num_cols].quantile(0.75) + 1.5*(df[num_cols].quantile(0.75) - df[num_cols].quantile(0.25))
+    temp['Имя признака'] = list_cols
+    temp['IQR'] = df[list_cols].quantile(0.75) - df[list_cols].quantile(0.25)
+    temp['perc25'] = df[list_cols].quantile(0.25)
+    temp['perc75'] = df[list_cols].quantile(0.75)
+    temp['Л. граница выбросов'] = df[list_cols].quantile(0.25) - 1.5*(df[list_cols].quantile(0.75) - df[list_cols].quantile(0.25))
+    temp['П. граница выбросов'] =df[list_cols].quantile(0.75) + 1.5*(df[list_cols].quantile(0.75) - df[list_cols].quantile(0.25))
     temp = pd.DataFrame.from_dict(temp, orient='index')
     display(temp.T)
     return
@@ -211,7 +207,7 @@ def show_roc_curve(y_true, y_pred_prob):
 
 # ### DATA
 
-# In[315]:
+# In[6]:
 
 
 DATA_DIR = '/kaggle/input/sf-dst-scoring/'
@@ -220,57 +216,57 @@ df_test = pd.read_csv(DATA_DIR+'test.csv')
 sample_submission = pd.read_csv(DATA_DIR+'/sample_submission.csv')
 
 
-# In[316]:
+# In[7]:
 
 
 df_train.info()
 
 
-# In[317]:
+# In[8]:
 
 
 df_train.head(5)
 
 
-# In[318]:
+# In[9]:
 
 
 # Построит диаграмму для переменной  'default'  
 ax = sns.countplot(x="default", data=df_train)
 
 
-# In[319]:
+# In[10]:
 
 
 df_test.info()
 
 
-# In[320]:
+# In[11]:
 
 
 df_test.head(5)
 
 
-# In[321]:
+# In[12]:
 
 
 sample_submission.head(5)
 
 
-# In[322]:
+# In[13]:
 
 
 a = sample_submission.reset_index()
 a
 
 
-# In[323]:
+# In[14]:
 
 
 sample_submission.info()
 
 
-# In[324]:
+# In[15]:
 
 
 # ВАЖНО! для корректной обработки признаков объединяем трейн и тест в один датасет
@@ -286,7 +282,7 @@ df = df_test.append(df_train, sort=False).reset_index(drop=True) # объеди�
 
 # ## Предобработка данных
 
-# In[325]:
+# In[16]:
 
 
 # описываем функцию, заменяющую в строковых столбцах  пробел на None
@@ -300,7 +296,7 @@ for col in df.columns:
 
 # ## 1. Первичный отсмотр данных
 
-# In[326]:
+# In[17]:
 
 
 df.info()
@@ -308,7 +304,7 @@ df.info()
 
 # ### Работа с пропусками
 
-# In[327]:
+# In[18]:
 
 
 # построим карту пропусков данных
@@ -320,7 +316,7 @@ df.isnull().sum()
 # У наличия пропусков могут быть разные причины, но пропуски нужно либо заполнить, либо исключить из набора полностью. Но с пропусками нужно быть внимательным, даже отсутствие информации может быть важным признаком!
 # По этому перед обработкой NAN лучше вынести информацию о наличии пропуска как отдельный признак
 
-# In[328]:
+# In[19]:
 
 
 
@@ -328,14 +324,14 @@ df.isnull().sum()
 df.shape[0] - df.dropna().shape[0]
 
 
-# In[329]:
+# In[20]:
 
 
 column = 'education'
 print(f'Общая доля пропусков в столбце {column}:', round((df[column].isnull().value_counts(normalize=True) * 100),2)[1], '%')
 
 
-# In[330]:
+# In[21]:
 
 
 # посмотрим значения 'education'
@@ -343,7 +339,7 @@ df.education.value_counts().plot.barh()
 plt.show()
 
 
-# In[331]:
+# In[22]:
 
 
 #пропуски наблюдаем только в столбц "education". Создадим новый столбец с признаком пропуска данных в education
@@ -352,7 +348,7 @@ df['education_isNAN'] = pd.isna(df['education']).astype('uint8')
 
 # Заполним пропуски, исходя из того, что уровень образования должен коррелироваться с уровнем дохода:
 
-# In[332]:
+# In[23]:
 
 
 # посмотрим каков для каждого типа образования средний доход
@@ -361,7 +357,7 @@ edu_income_mean = round(df.groupby(['education']).income.mean())
 edu_income_mean.sort_values(inplace=True)
 
 
-# In[333]:
+# In[24]:
 
 
 edu_income_mean
@@ -371,7 +367,7 @@ plt.ylim(top=200_000)
 ax = sns.boxplot(x="education", y="income", data=df)
 
 
-# In[334]:
+# In[25]:
 
 
 # заполним пропуски в 'education' словом 'Unknown'
@@ -398,7 +394,7 @@ def insert_education(row):
 df['education'] = df.apply(insert_education, axis=1)
 
 
-# In[335]:
+# In[26]:
 
 
 df.education.value_counts()
@@ -408,20 +404,20 @@ df.education.value_counts()
 
 # Для начала посмотрим какие признаки у нас могут быть категориальныe, ,бинарные и числовые:
 
-# In[336]:
+# In[27]:
 
 
 df.nunique(dropna=False)
 
 
-# In[337]:
+# In[28]:
 
 
 pd.set_option('display.max_columns', None)
 df.head(2)
 
 
-# In[338]:
+# In[29]:
 
 
 # сформируем списки столбцов по группам исходя из типов признаков
@@ -433,7 +429,7 @@ cat_cols =['education', 'region_rating', 'home_address','work_address', 'sna', '
 
 # ### 2.1. Временные ряды
 
-# In[339]:
+# In[30]:
 
 
 column = 'app_date'
@@ -441,14 +437,14 @@ print(df[column].min())
 print (df[column].max())
 
 
-# In[340]:
+# In[31]:
 
 
 # Преобразуем строковый признак 'app_date' в дату
 df[column] = df[column].apply(lambda x: DT.datetime.strptime(x, '%d%b%Y').date())
 
 
-# In[341]:
+# In[32]:
 
 
 # определим диапазон дат и вместо них, назначим признаком число дней от начальной (минимальной)даты.
@@ -458,14 +454,14 @@ start_date = df[column].min()
 df[column] = df[column].apply(lambda x: (x - start_date).days)
 
 
-# In[342]:
+# In[33]:
 
 
-graph_source_data(df,column)
+show_plot_boxplot(df,column)
 num_cols.append(column)
 
 
-# In[343]:
+# In[34]:
 
 
 # Для очистки тренировочного датасета от выбросов в числовых переменных, снова разделим общий датасет по признаку Sample
@@ -475,20 +471,20 @@ test_data = df.query('sample == 0')
 
 # ### 2.2. Числовые признаки
 
-# In[344]:
+# In[35]:
 
 
 # посмотрим параметры IQR, гистограммы и боксплоты числовых признаков
-IQR_perc(train_data)
+IQR_perc(train_data, num_cols)
 for column in num_cols:
-    graph_source_data(train_data,column)
+    show_plot_boxplot(train_data,column)
 
 
 # После построения гистограмм стало очевидно, что распределения числовых переменных 'age', 'decline_app_cnt', 'bki_request_cnt', 'income' имеют тяжёлый правый хвост (у 'app_date' - левый), кроме того, почти все числовые признаки (кроме 'age' и 'app_date') содержат выбросы, к которым чувствительна LogisticRegression.
 
 # ### 2.2.1 Удаление выбросов
 
-# In[345]:
+# In[36]:
 
 
 # у столбцов 'age'и 'app_date'  на боксплотах нет выбросов, поэтому рассмотрим  другие 4 столбца  
@@ -507,7 +503,7 @@ print('Количество значений за пределами грани�
 print((len((train_data.loc[train_data['score_bki'] > -0.52907]) +                 (train_data.loc[-3.29925 > train_data['score_bki']]))/train_data.shape[0])*100, '% общего датасета')
 
 
-# In[346]:
+# In[37]:
 
 
 # Удалим данные выбросы
@@ -518,16 +514,16 @@ train_data = train_data.drop(train_data[train_data['score_bki'] > -0.52907].inde
 train_data = train_data.drop(train_data[train_data['score_bki'] < -3.29925].index)     
 
 
-# In[347]:
+# In[38]:
 
 
 # посмотрим параметры IQR, гистограммы и боксплоты числовых признаков
-IQR_perc(df)
+IQR_perc(df, num_cols)
 for column in num_cols:
-    graph_source_data(train_data,column)
+    show_plot_boxplot(train_data,column)
 
 
-# In[348]:
+# In[39]:
 
 
 # для дальнейшей обработки повторно объединим тренировочный и тесовый датасеты в один
@@ -538,7 +534,7 @@ df = test_data.append(train_data, sort=False).reset_index(drop=True)
 # 
 # Анализ распределений и boxplot-ов показывает, что признак 'score_bki' может быть как положительным, так и отрицательным, его логарифмировать напрямую нельзя, но его распределение и так похоже на нормальное. Возьмем логарифм от числовых признаков за исключением  'score_bki' и построим графики распределения логарифмированных переменных.
 
-# In[349]:
+# In[40]:
 
 
 ## только распределение 'score_bki' выглядит нормально
@@ -548,16 +544,16 @@ df[num_cols] = df[num_cols].apply(lambda y: np.log(y+1))
 num_cols.append('score_bki')
 
 
-# In[350]:
+# In[41]:
 
 
 for column in num_cols:
-    graph_source_data(df,column)
+    show_plot_boxplot(df,column)
 
 
 # После логарифмирования некоторые переменные стали менее смещёнными.
 
-# In[351]:
+# In[42]:
 
 
 fig, axes = plt.subplots(2, 3, figsize=(22, 12))
@@ -578,7 +574,7 @@ for i in range(len(num_cols)):
 
 # ### 2.2.2 Корреляция
 
-# In[352]:
+# In[43]:
 
 
 correlation = df[num_cols].corr()
@@ -592,7 +588,7 @@ sns.heatmap(correlation, annot=True, cmap='coolwarm')
 
 # В качестве меры значимости мы будем использовать значение f-статистики. Чем значение статистики выше, тем меньше вероятность того, что средние значения не отличаются, и тем важнее данный признак для нашей линейной модели.
 
-# In[353]:
+# In[44]:
 
 
 # Проанализируем наши числовые признаки
@@ -605,7 +601,7 @@ imp_num.plot(kind = 'barh')
 
 # ## 2.3. Бинарные признаки
 
-# In[354]:
+# In[45]:
 
 
 # Для перевода бинарных признаков в числа мы будем использовать LabelEncoder
@@ -622,7 +618,7 @@ df.head()
 
 # ## 2.4. Категориальные признаки
 
-# In[355]:
+# In[46]:
 
 
 # Переведем категориальные признаки в числа
@@ -634,7 +630,7 @@ for column in cat_cols:
 df.head()
 
 
-# In[356]:
+# In[47]:
 
 
 """Для оценки значимости категориальных и бинарных переменных будем использовать функцию mutual_info_classif 
@@ -653,7 +649,7 @@ imp_cat.plot(kind = 'barh')
 
 # Разбиваем датасет на тренировочный и тестовый, удалив лишние столбцы
 
-# In[357]:
+# In[48]:
 
 
 train_data = df.query('sample == 1').drop(['sample', 'client_id'], axis=1)
@@ -669,20 +665,20 @@ test_data = test_data.drop(['client_id'], axis=1)
 train = pd.get_dummies(train_data, columns=cat_cols, dummy_na=False, dtype='uint8')
 
 
-# In[358]:
+# In[49]:
 
 
 train.head(2)
 
 
-# In[359]:
+# In[50]:
 
 
 y = train.default.values            # наша целевая переменная
 X = train.drop(['default'], axis=1)
 
 
-# In[360]:
+# In[51]:
 
 
 # Разделим данные для обучения следующим образом:
@@ -694,7 +690,7 @@ X_train.shape, X_test.shape, y_train.shape, y_test.shape
 
 # ### 4.1 Модель без гиперпараметров
 
-# In[361]:
+# In[52]:
 
 
 #model = LogisticRegression()
@@ -718,7 +714,7 @@ show_confusion_matrix(y_test, y_pred)
 
 # Попробуем выполнить нормировку с помощью RobastScaler, которая при нормализации использует медианы и   квантили, поэтому не чувствительна к выбросам и может приводить к лучшим результатам.
 
-# In[362]:
+# In[53]:
 
 
 # При помощи RobastScaler нормируем числовые данные из тренировочного датасета сразу после разделения 
@@ -757,13 +753,46 @@ show_confusion_matrix(y_test, y_pred)
 
 # ### 4.3. Модель с гиперпараметрами
 
-# In[363]:
+# In[54]:
 
 
-get_ipython().run_cell_magic('timeit', '-n1 -r1', "from sklearn.model_selection import GridSearchCV\n\nC = np.logspace(0, 4, 10)\niter_ = 50\nepsilon_stop = 1e-3\n \nhyperparameters = [\n    {'penalty': ['l1'], \n     'C': C,  \n     'max_iter':[iter_],\n     'tol':[epsilon_stop]},\n    {'penalty': ['l2'], \n     'C': C, \n     'max_iter':[iter_],\n     'tol':[epsilon_stop]},\n    {'penalty': ['none'], \n     'C': C, \n     'max_iter':[iter_],\n     'tol':[epsilon_stop]},\n]\n\nmodel = LogisticRegression()\nmodel.fit(X_train, y_train)\n\n# Создаем сетку поиска с использованием 5-кратной перекрестной проверки\nclf = GridSearchCV(model, hyperparameters, cv=5, verbose=0)\n\nbest_model = clf.fit(X_train, y_train)\n\n# View best hyperparameters\nprint('Лучшее Penalty:', best_model.best_estimator_.get_params()['penalty'])\nprint('Лучшее C:', best_model.best_estimator_.get_params()['C'])\nprint('Лучшее max_iter:', best_model.best_estimator_.get_params()['max_iter'])\nprint('Лучшее tol:', best_model.best_estimator_.get_params()['tol'])")
+from sklearn.model_selection import GridSearchCV
+
+C = np.logspace(0, 4, 10)
+iter_ = 50
+epsilon_stop = 1e-3
+ 
+hyperparameters = [
+    {'penalty': ['l1'], 
+     'C': C,  
+     'max_iter':[iter_],
+     'tol':[epsilon_stop]},
+    {'penalty': ['l2'], 
+     'C': C, 
+     'max_iter':[iter_],
+     'tol':[epsilon_stop]},
+    {'penalty': ['none'], 
+     'C': C, 
+     'max_iter':[iter_],
+     'tol':[epsilon_stop]},
+]
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Создаем сетку поиска с использованием 5-кратной перекрестной проверки
+clf = GridSearchCV(model, hyperparameters, cv=5, verbose=0)
+
+best_model = clf.fit(X_train, y_train)
+
+# View best hyperparameters
+print('Лучшее Penalty:', best_model.best_estimator_.get_params()['penalty'])
+print('Лучшее C:', best_model.best_estimator_.get_params()['C'])
+print('Лучшее max_iter:', best_model.best_estimator_.get_params()['max_iter'])
+print('Лучшее tol:', best_model.best_estimator_.get_params()['tol'])
 
 
-# In[364]:
+# In[55]:
 
 
 y = train.default.values            # наша целевая переменная
@@ -793,7 +822,7 @@ show_confusion_matrix(y_test, y_pred)
 
 # ### Модель 4. Полиномиальные признаки, RobastScaler и гиперпараметры
 
-# In[365]:
+# In[56]:
 
 
 # Преобразуем числовые признаки в полиномиальные
@@ -855,7 +884,7 @@ print('Лучшее max_iter:', best_model.best_estimator_.get_params()['max_ite
 print('Лучшее tol:', best_model.best_estimator_.get_params()['tol'])
 
 
-# In[371]:
+# In[57]:
 
 
 # Передача лучших гиперпараметров непосредственно в модель, что позволяет пропустить пункт обучения модели
@@ -893,19 +922,19 @@ show_confusion_matrix(y_test, y_pred)
 
 # Готовим Submission на кагл:
 
-# In[372]:
+# In[58]:
 
 
 test_data.sample(3)
 
 
-# In[373]:
+# In[59]:
 
 
 sample_submission
 
 
-# In[374]:
+# In[60]:
 
 
 # Формируем свой submission
