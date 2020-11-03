@@ -129,7 +129,7 @@ def show_plot_boxplot(df, column, bins=80):
     return
 
 
-# Пропишем функцию расчета IQR и квартилей. И прорисовку  их графика
+# Пропишем функцию расчета IQR и квартилей.
 
 def IQR_perc(df,list_cols):
     temp = {}
