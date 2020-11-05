@@ -73,6 +73,8 @@ import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 
 import matplotlib.pyplot as plt
+get_ipython().run_line_magic('matplotlib', 'inline')
+
 import seaborn as sns
 
 from sklearn.feature_selection import f_classif, mutual_info_classif
@@ -402,7 +404,7 @@ df.education.value_counts()
 
 # # 2. Обработка признаков
 
-# Для начала посмотрим какие признаки у нас могут быть категориальныe, ,бинарные и числовые:
+# Для начала посмотрим какие признаки у нас могут быть категориальныe, бинарные и числовые:
 
 # In[27]:
 
@@ -678,6 +680,12 @@ y = train.default.values            # наша целевая переменна
 X = train.drop(['default'], axis=1)
 
 
+# In[ ]:
+
+
+
+
+
 # In[51]:
 
 
@@ -884,7 +892,7 @@ print('Лучшее max_iter:', best_model.best_estimator_.get_params()['max_ite
 print('Лучшее tol:', best_model.best_estimator_.get_params()['tol'])
 
 
-# In[57]:
+# In[58]:
 
 
 # Передача лучших гиперпараметров непосредственно в модель, что позволяет пропустить пункт обучения модели
@@ -892,7 +900,7 @@ print('Лучшее tol:', best_model.best_estimator_.get_params()['tol'])
 
 
 # Обучаем модель
-model_4 = LogisticRegression(penalty='l2', C=464.15888336127773, max_iter=50, class_weight ='balanced', tol= 0.001, random_state=RANDOM_SEED)
+model_4 = LogisticRegression(penalty='l2', C=464.15888336127773, max_iter=50, solver='sag', class_weight ='balanced', tol= 0.001, random_state=RANDOM_SEED)
 
 model_4.fit(X_train, y_train)
 
@@ -922,19 +930,19 @@ show_confusion_matrix(y_test, y_pred)
 
 # Готовим Submission на кагл:
 
-# In[58]:
+# In[ ]:
 
 
 test_data.sample(3)
 
 
-# In[59]:
+# In[ ]:
 
 
 sample_submission
 
 
-# In[60]:
+# In[ ]:
 
 
 # Формируем свой submission
