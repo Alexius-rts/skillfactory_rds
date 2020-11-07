@@ -900,6 +900,7 @@ print('Лучшее tol:', best_model.best_estimator_.get_params()['tol'])
 
 
 # Обучаем модель
+# Вычислив 'penalty' с помощью GridSearchCV, исходя из его значения вручную подберем оптимальный 'solver'
 model_4 = LogisticRegression(penalty='l2', C=464.15888336127773, max_iter=50, solver='sag', class_weight ='balanced', tol= 0.001, random_state=RANDOM_SEED)
 
 model_4.fit(X_train, y_train)
@@ -915,7 +916,7 @@ show_confusion_matrix(y_test, y_pred)
 
 
 # ВЫВОДЫ: 
-#  - Построенная модель при добавлении полиномиальных признаков по сравнению с третьей  дала некоторое улучшение - recall немного улучшился
+#  - Построенная модель при добавлении полиномиальных признаков по сравнению с третьей  дала некоторое улучшение - recall немного улучшился. 
 
 # ### 5. Submission
 
