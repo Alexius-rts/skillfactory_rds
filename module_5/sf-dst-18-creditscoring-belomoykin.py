@@ -727,14 +727,10 @@ show_confusion_matrix(y_test, y_pred)
 
 # При помощи RobastScaler нормируем числовые данные из тренировочного датасета сразу после разделения 
 # и приводим к виду 2-мерного массива
-r_scaler = RobustScaler().fit(train_data[num_cols].values)
-r_scaler.transform(test_data[num_cols].values)
+r_scaler = RobustScaler()
 
 
-
-
-
-X_num = r_scaler.transform(train_data[num_cols].values)
+X_num = r_scaler.fit_transform(train_data[num_cols].values)
 X_num_test = r_scaler.transform(test_data[num_cols].values)
 # преобразуем категориальные данные в 2-х мерный массив, наподобие get_dummies
 """По умолчанию OneHotEncoder преобразует данные в разреженную матрицу(sparse = True), чтобы не расходовать память на хранение многочисленных 
@@ -847,11 +843,9 @@ X_num_test =poly.fit_transform(test_data[num_cols].values)
 # При помощи RobastScaler нормируем числовые данные из тренировочного датасета сразу после разделения 
 # и приводим к виду 2-мерного массива
 
-r_scaler = RobustScaler().fit(train_data[num_cols].values)
-r_scaler.transform(test_data[num_cols].values)
+r_scaler = RobustScaler()
 
-
-X_num = r_scaler.transform(train_data[num_cols].values)
+X_num = r_scaler.fit_transform(train_data[num_cols].values)
 X_num_test = r_scaler.transform(test_data[num_cols].values)
 
 # преобразуем категориальные данные в 2-х мерный массив, наподобие get_dummies
